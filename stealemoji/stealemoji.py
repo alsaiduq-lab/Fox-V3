@@ -26,6 +26,7 @@ class StealEmoji(Cog):
             "on": False,
             "notify": 0,
             "autobank": False,
+            "admins": [],
         }
 
         self.config.register_global(**default_global)
