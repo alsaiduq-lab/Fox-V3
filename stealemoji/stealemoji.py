@@ -237,15 +237,20 @@ class StealEmoji(Cog):
             return
 
         emoji: discord.Emoji = reaction.emoji
-        if emoji in self.bot.emojis:
+        stolen_emojis = await self.config.stolemoji()
+
+        # Check if the emoji has already been registered
+        if str(emoji) in stolen_emojis:
             return
 
         # Get list of admins from config (replace 'admins' with actual key)
         admins = await self.config.admins()
 
         def check(m):
-            return m.author == admin and m.channel.type == discord.ChannelType.private and m.content.lower() in [
-                'yes', 'no', 'y', 'n']
+            return m.author == admin and m.channel.type == discord.ChannelType.private and m.content.lower() in ['yes',
+                                                                                                                 'no',
+                                                                                                                 'y',
+                                                                                                                 'n']
 
         for admin_id in admins:
             try:
@@ -263,7 +268,7 @@ class StealEmoji(Cog):
                 color=discord.Color.gold())
 
             # Embed message containing custom emoji reaction image URL
-            embed.set_image(url=reaction.emoji.url)
+            embed.set_image(url=emoji.url)
 
             try:
                 message = await admin.send(embed=embed)  # Send DM instead of mentioning in a channel
@@ -275,8 +280,8 @@ class StealEmoji(Cog):
                 msg = await self.bot.wait_for('message', check=check, timeout=60)
                 if msg.content.lower() in ['yes', 'y']:
                     # Add emoji to collection
-                    async with self.config.emojis() as emojis:
-                        emojis[str(emoji)] = emoji.url
+                    async with self.config.stolemoji() as emojis:
+                        emojis[str(emoji)] = str(emoji.url)
             except asyncio.TimeoutError:
                 await admin.send(
                     "You didn't respond in time, please react to the message again if you want"
