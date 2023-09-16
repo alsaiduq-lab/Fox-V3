@@ -236,9 +236,14 @@ class StealEmoji(Cog):
     @commands.Cog.listener()
     async def on_reaction_add(self, reaction: discord.Reaction, user: discord.User):
         """Event handler for reaction watching"""
-        if not reaction.custom_emoji:
+        # if not reaction.custom_emoji:
             # print("Not a custom emoji")
-            return
+            # return
+        try:
+            if not reaction.custom_emoji:
+                return
+        except AttributeError:
+            return  # Not a custom emoji
 
         if self.is_on is None:
             self.is_on = await self.config.on()
